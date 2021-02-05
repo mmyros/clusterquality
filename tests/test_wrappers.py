@@ -38,7 +38,7 @@ def test_calculate_isi_violations():
     assert np.isclose(isi_viol_n.mean(), 91.135, atol=.00001)
 
 
-def download_and_load(include_pcs=True, subsample=50):
+def download_and_load(include_pcs=True, subsample=150):
     # SinglePhase3
     base_path, files = test_dependencies.download_test_data(base_url='http://data.cortexlab.net/singlePhase3/data/',
                                                             base_path='test_data/',
@@ -101,7 +101,7 @@ def test_calculate_pc_features():
 def test_calculate_silhouette():
     (base_path, path_expected, spike_times, spike_clusters, spike_templates, templates, amplitudes,
      unwhitened_temps, channel_map, cluster_ids, cluster_quality, pc_features, pc_feature_ind
-     ) = download_and_load(subsample=50)
+     ) = download_and_load(subsample=150)
 
     df = wrappers.calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, pc_features,
                                     pc_feature_ind,

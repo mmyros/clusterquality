@@ -1,4 +1,4 @@
-name: cluster_quality
+name: clusterquality
 channels:
   - conda-forge
   - defaults
@@ -6,15 +6,7 @@ dependencies:
   - numpy
   - matplotlib
   - scipy
-  - xarray
-  - setuptools
-  - jupyter
 pip:
   - click
-  - neo
-  - spikeextractors==0.8.*
-  - git+https://github.com/mmyros/ssm.git@master#egg=ssm
-  - git+https://github.com/cortex-lab/phylib.git@master#egg=phylib
-  - git+https://github.com/cortex-lab/phy.git@master#egg=phy
-  - git+https://github.com/mmyros/pykilosort.git@master#egg=pykilosort
+
 

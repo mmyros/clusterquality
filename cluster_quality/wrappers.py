@@ -1,10 +1,11 @@
-import warnings
 import os
-import pandas as pd
+import warnings
+from collections import OrderedDict
+
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 
-from collections import OrderedDict
 from . import quality_metrics
 
 
@@ -27,8 +28,7 @@ def calculate_isi_violations(spike_times, spike_clusters, isi_threshold, min_isi
 
 
 def calculate_n_spikes(spike_clusters):
-
-    return  np.array([sum(spike_clusters==cluster_id) for cluster_id in np.unique(spike_clusters)])
+    return np.array([sum(spike_clusters == cluster_id) for cluster_id in np.unique(spike_clusters)])
 
 
 def calculate_presence_ratio(spike_times, spike_clusters):
@@ -248,7 +248,10 @@ def calculate_pc_metrics_one_cluster(cluster_peak_channels, idx, cluster_id, clu
 
     channels_to_use = np.arange(peak_channel - half_spread_down, peak_channel + half_spread_up + 1)
     units_in_range = cluster_ids[np.isin(cluster_peak_channels, channels_to_use)]
-
+    if units_in_range.size < 2:
+        warnings.warn('Not enough overlap with peak channels. '
+                      'Try increasing "num_channels_to_compare" parameter. Not calculating pc metrics')
+        return tuple(np.repeat(np.nan, 5))
     spike_counts = np.zeros(units_in_range.shape)
 
     for idx2, cluster_id2 in enumerate(units_in_range):
@@ -290,6 +293,7 @@ def calculate_pc_metrics_one_cluster(cluster_peak_channels, idx, cluster_id, clu
             and (len(channels_to_use) > 0)):
 
         isolation_distance, l_ratio = quality_metrics.mahalanobis_metrics(all_pcs, all_labels, cluster_id)
+
         d_prime = quality_metrics.lda_metrics(all_pcs, all_labels, cluster_id)
         nn_hit_rate, nn_miss_rate = quality_metrics.nearest_neighbors_metrics(all_pcs, all_labels,
                                                                               cluster_id,
@@ -311,7 +315,7 @@ def calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, 
                       do_parallel=True, do_pc_features=True, do_silhouette=True, do_drift=True,
                       isi_threshold=0.0015,
                       min_isi=0.000166,
-                      num_channels_to_compare=5,
+                      num_channels_to_compare=11,
                       max_spikes_for_unit=1500,
                       max_spikes_for_nn=20000,
                       n_neighbors=4,
@@ -363,10 +367,9 @@ def calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, 
 
     n_spikes_per_cluster = calculate_n_spikes(spike_clusters)
 
-    print(f'Found {total_units} clusters. {sum(n_spikes_per_cluster>20)} of them have >20 spikes')
+    print(f'Found {total_units} clusters. {sum(n_spikes_per_cluster > 20)} of them have >20 spikes')
     print("Calculating isi violations")
     isi_viol_rate, isi_viol_n = calculate_isi_violations(spike_times, spike_clusters, isi_threshold, min_isi)
-
 
     print("Calculating presence ratio")
     presence_ratio = calculate_presence_ratio(spike_times, spike_clusters, )

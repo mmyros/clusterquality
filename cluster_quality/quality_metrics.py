@@ -1,11 +1,12 @@
-from sklearn.metrics import silhouette_score
+import warnings
+
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
 from scipy.spatial.distance import cdist
 from scipy.stats import chi2
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn.metrics import silhouette_score
 from sklearn.neighbors import NearestNeighbors
-import warnings
 
 
 def isi_violations(spike_train, min_time, max_time, isi_threshold, min_isi=0):
@@ -196,6 +197,13 @@ def lda_metrics(all_pcs, all_labels, this_unit_id):
     y = np.zeros((X.shape[0],), dtype='bool')
     y[all_labels == this_unit_id] = True
 
+    # Quick sanity check:
+    from sklearn.utils.multiclass import unique_labels
+    n_components = 1
+    classes_ = unique_labels(y)
+    max_components = min(len(classes_) - 1, X.shape[1])
+    assert n_components <= max_components
+    # Continue with calculation
     lda = LDA(n_components=1)
 
     X_flda = lda.fit_transform(X, y)
@@ -269,6 +277,8 @@ def silhouette_score_inner_loop(i, cluster_ids, cluster_labels, all_pcs):
     Returns: scores for dimension j
     """
     scores_1d = []
+    assert (cluster_labels.shape[0] ==
+            all_pcs.shape[0]), f'Found {cluster_labels.shape[0]} cluster_ids but {all_pcs.shape[0]} pcs!'
     for j in cluster_ids:
         if j > i:
             inds = np.in1d(cluster_labels, np.array([i, j]))
@@ -282,6 +292,7 @@ def silhouette_score_inner_loop(i, cluster_ids, cluster_labels, all_pcs):
         else:
             scores_1d.append(np.nan)
     return scores_1d
+
 
 def calculate_silhouette_score(spike_clusters,
                                spike_templates,
@@ -298,6 +309,9 @@ def calculate_silhouette_score(spike_clusters,
     :return:
     """
     import warnings
+    if total_spikes > spike_clusters.shape[0]:
+        total_spikes = spike_clusters.shape[0]  # take all spikes
+
     cluster_ids = np.unique(spike_clusters)
     random_spike_inds = np.random.permutation(spike_clusters.size)
     random_spike_inds = random_spike_inds[:total_spikes]

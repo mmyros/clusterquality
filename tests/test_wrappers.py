@@ -38,7 +38,7 @@ def test_calculate_isi_violations():
     assert np.isclose(isi_viol_n.mean(), 91.135, atol=.00001)
 
 
-def download_and_load(include_pcs=True, subsample=150):
+def download_and_load(include_pcs=True, subsample=500):
     # SinglePhase3
     base_path, files = test_dependencies.download_test_data(base_url='http://data.cortexlab.net/singlePhase3/data/',
                                                             base_path='test_data/',

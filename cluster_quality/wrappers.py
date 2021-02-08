@@ -315,7 +315,7 @@ def calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, 
                       do_parallel=True, do_pc_features=True, do_silhouette=True, do_drift=True,
                       isi_threshold=0.0015,
                       min_isi=0.000166,
-                      num_channels_to_compare=11,
+                      num_channels_to_compare=5,
                       max_spikes_for_unit=1500,
                       max_spikes_for_nn=20000,
                       n_neighbors=4,
@@ -388,32 +388,32 @@ def calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, 
 
     if do_pc_features:
         print("Calculating PC-based metrics")
-        # try:
-        (isolation_distance, l_ratio,
-         d_prime, nn_hit_rate, nn_miss_rate) = calculate_pc_metrics(spike_clusters,
-                                                                    spike_templates,
-                                                                    total_units,
-                                                                    pc_features,
-                                                                    pc_feature_ind,
-                                                                    num_channels_to_compare,
-                                                                    max_spikes_for_unit,
-                                                                    max_spikes_for_nn,
-                                                                    n_neighbors,
-                                                                    do_parallel=do_parallel)
-        # except Exception:
-        #     # Fallback
-        #     print("Falling back to old Allen algo")
-        #     (isolation_distance, l_ratio,
-        #      d_prime, nn_hit_rate, nn_miss_rate) = calculate_pc_metrics(spike_clusters,
-        #                                                                          spike_templates,
-        #                                                                          total_units,
-        #                                                                          pc_features,
-        #                                                                          pc_feature_ind,
-        #                                                                          num_channels_to_compare,
-        #                                                                          max_spikes_for_unit,
-        #                                                                          max_spikes_for_nn,
-        #                                                                          n_neighbors,
-        #                                                                          do_parallel=do_parallel)
+        try:
+            (isolation_distance, l_ratio,
+             d_prime, nn_hit_rate, nn_miss_rate) = calculate_pc_metrics(spike_clusters,
+                                                                        spike_templates,
+                                                                        total_units,
+                                                                        pc_features,
+                                                                        pc_feature_ind,
+                                                                        num_channels_to_compare,
+                                                                        max_spikes_for_unit,
+                                                                        max_spikes_for_nn,
+                                                                        n_neighbors,
+                                                                        do_parallel=do_parallel)
+        except Exception as e:
+            num_channels_to_compare+=4
+            print(f'Hit error {e}.\n Increasing num_channels_to_compare to {num_channels_to_compare} and retrying')
+            (isolation_distance, l_ratio,
+             d_prime, nn_hit_rate, nn_miss_rate) = calculate_pc_metrics(spike_clusters,
+                                                                        spike_templates,
+                                                                        total_units,
+                                                                        pc_features,
+                                                                        pc_feature_ind,
+                                                                        num_channels_to_compare,
+                                                                        max_spikes_for_unit,
+                                                                        max_spikes_for_nn,
+                                                                        n_neighbors,
+                                                                        do_parallel=do_parallel)
 
         metrics0 = pd.DataFrame(data=OrderedDict((('isolation_distance', isolation_distance),
                                                   ('l_ratio', l_ratio),

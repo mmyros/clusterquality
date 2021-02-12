@@ -1,7 +1,7 @@
 import numpy as np
 
 from cluster_quality import wrappers
-from test_wrappers import download_and_load
+from tests.test_wrappers import download_and_load
 
 np.random.seed(1000)
 

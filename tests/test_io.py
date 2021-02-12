@@ -15,7 +15,6 @@ def test_load_kilosort_data():
     # 959 templates; 960 pc_feature_ind shape; 1209 spike_clusters; 675 unique spike_clusters
     print(pc_feature_ind.shape)
     print(cluster_ids.max())
-    print([])
     ### doublePhase3 (has no feature files available)
     base_path, files = download_test_data(base_url='http://data.cortexlab.net/dualPhase3/data/frontal/',
                                           base_path='test_data/')

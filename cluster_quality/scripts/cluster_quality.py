@@ -17,10 +17,10 @@ import warnings
 
 @click.command()
 @click.option('--kilosort_folder', default=None, help='kilosort_folder to read from and write to')
-@click.option('--do_parallel', default=1, help='Parallel or not, 0 or 1')
-@click.option('--do_silhouette', default=1, help='do_silhouette or not, 0 or 1')
-@click.option('--do_drift', default=1, help='do_drift or not, 0 or 1')
-@click.option('--do_pc_features', default=1, help='do_pc_features or not, 0 or 1')
+@click.option('--do_parallel', default=True, type=bool, help='Parallel or not, 0 or 1')
+@click.option('--do_silhouette', default=True, type=bool, help='do_silhouette or not, 0 or 1')
+@click.option('--do_drift', default=True, type=bool, help='do_drift or not, 0 or 1')
+@click.option('--do_pc_features', default=True, type=bool, help='do_pc_features or not, 0 or 1')
 def cli(kilosort_folder=None, do_parallel=True, do_pc_features=True, do_silhouette=True, do_drift=True, fs=3e4):
     """ Calculate metrics for all units on one probe"""
     # kilosort_folder = '~/res_ss_full/res_ss/tcloop_train_m022_1553627381_'

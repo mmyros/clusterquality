@@ -20,7 +20,7 @@ def test_cli():
         base_url='http://data.cortexlab.net/singlePhase3/data/',
         base_path='test_data/', download_features=False)
     os.chdir(base_path)
-    result = runner.invoke(cluster_quality.cli, '--do_pc_features=0 --do_silhouette=0 --do_drift=0')
+    result = runner.invoke(cluster_quality.cli, '--do_pc_features=False --do_silhouette=False --do_drift=False')
     assert result.exit_code == 0
 
 

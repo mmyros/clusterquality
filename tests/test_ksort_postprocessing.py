@@ -1,12 +1,12 @@
-from cluster_quality import io
-from tests import test_dependencies
-from cluster_quality import ksort_postprocessing
-
 import numpy as np
+
+from cluster_quality import io
+from cluster_quality import ksort_postprocessing
+from tests import test_dependencies
 
 
 def test_remove_double_counted_spikes():
-    ### SinglePhase3
+    # SinglePhase3
     base_path, files = test_dependencies.download_test_data(
         base_url='http://data.cortexlab.net/singlePhase3/data/',
         base_path='test_data/', download_features=False)

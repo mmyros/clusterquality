@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 
 from cluster_quality import wrappers
@@ -13,7 +14,8 @@ def test_calculate_pc_features():
 
     df = wrappers.calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, pc_features,
                                     pc_feature_ind,
-                                    output_folder=None, do_parallel=True,
+                                    num_channels_to_compare=11,
+                                    output_folder=None, do_parallel=False,
                                     do_pc_features=True, do_silhouette=False, do_drift=False)
     # df.to_csv(path_expected / 'pc_features.csv', index=False)  # Uncomment this if results must change
     # pd.testing.assert_frame_equal(df.round(1), pd.read_csv(path_expected / 'pc_features.csv').round(1),

@@ -3,16 +3,11 @@ Adapted from Allen from:
 https://github.com/AllenInstitute/ecephys_spike_sorting.git
 """
 import click
-import numpy as np
 import os
-from collections import OrderedDict
-
-import pandas as pd
 
 from .. import io
 from .. import ksort_postprocessing
 from ..wrappers import calculate_metrics
-import warnings
 
 
 @click.command()
@@ -24,9 +19,6 @@ import warnings
 def cli(kilosort_folder=None, do_parallel=True, do_pc_features=True, do_silhouette=True, do_drift=True, fs=3e4):
     """ Calculate metrics for all units on one probe"""
     # kilosort_folder = '~/res_ss_full/res_ss/tcloop_train_m022_1553627381_'
-    if (('False' in [do_parallel, do_pc_features, do_silhouette, do_drift]) |
-            ('True' in [do_parallel, do_pc_features, do_silhouette, do_drift])):
-        warnings.warn('Please dont use True or False for input from command line! use 0 or 1 instead')
     if kilosort_folder is None:
         kilosort_folder = os.getcwd()
     print(f'Running cluster_quality in folder {kilosort_folder}')
@@ -34,7 +26,7 @@ def cli(kilosort_folder=None, do_parallel=True, do_pc_features=True, do_silhouet
         do_include_pcs = True
     else:
         do_include_pcs = False
-
+    print(do_pc_features, do_silhouette, do_drift)
     (the_spike_times, the_spike_clusters, the_spike_templates, the_templates, the_amplitudes, the_unwhitened_temps,
      the_channel_map, the_cluster_ids, the_cluster_quality,
      the_pc_features, the_pc_feature_ind) = io.load_kilosort_data(kilosort_folder,
@@ -57,25 +49,16 @@ def cli(kilosort_folder=None, do_parallel=True, do_pc_features=True, do_silhouet
         print(e)
         print('Cannot remove overlapping spikes due to error above ')
 
-    all_metrics = calculate_metrics(the_spike_times, the_spike_clusters, the_spike_templates,
-                                    the_amplitudes, the_pc_features, the_pc_feature_ind,
-                                    output_folder=kilosort_folder,
-                                    do_pc_features=do_pc_features,
-                                    do_silhouette=do_silhouette,
-                                    do_drift=do_drift,
-                                    do_parallel=do_parallel)
+    calculate_metrics(the_spike_times, the_spike_clusters, the_spike_templates,
+                      the_amplitudes, the_pc_features, the_pc_feature_ind,
+                      output_folder=kilosort_folder,
+                      do_pc_features=do_pc_features,
+                      do_silhouette=do_silhouette,
+                      do_drift=do_drift,
+                      do_parallel=do_parallel)
+    return 0
 
 
 # Launch this file and drop into debug if needed
 if __name__ == '__main__':
-    try:
-        cli()
-    except SystemExit:
-        pass
-    # except Exception as e:
-    #     print('Error. Trying to start debugger... :\n ', e)
-    #     import sys, traceback, pdb
-    #
-    #     extype, value, tb = sys.exc_info()
-    #     traceback.print_exc()
-    #     pdb.post_mortem(tb)
+    cli()

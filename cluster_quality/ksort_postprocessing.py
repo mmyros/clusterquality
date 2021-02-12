@@ -96,7 +96,7 @@ def remove_spikes(spike_times, spike_clusters, spike_templates=None, amplitudes=
     spikes_to_remove = spikes_to_remove.astype(int)
     spike_times = np.delete(spike_times, spikes_to_remove, 0)
     spike_clusters = np.delete(spike_clusters, spikes_to_remove, 0)
-    if not(spike_templates is None):
+    if not (spike_templates is None):
         spike_templates = np.delete(spike_templates, spikes_to_remove, 0)
     if not (amplitudes is None):
         amplitudes = np.delete(amplitudes, spikes_to_remove, 0)

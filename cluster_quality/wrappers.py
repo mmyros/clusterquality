@@ -1,9 +1,9 @@
-import os
-import warnings
 from collections import OrderedDict
 
 import numpy as np
+import os
 import pandas as pd
+import warnings
 from tqdm import tqdm
 
 from . import quality_metrics
@@ -137,7 +137,7 @@ def calculate_pc_metrics(spike_clusters,
     # Loop over clusters:
     if do_parallel:
         from joblib import Parallel, delayed
-        meas = Parallel(n_jobs=-1, verbose=2)(  # -1 means use all cores
+        meas = Parallel(n_jobs=-1, verbose=1)(  # -1 means use all cores
             # delayed(Wrappers.calculate_pc_metrics_one_cluster_old)  # Function
             # (template_peak_channels, cluster_id, half_spread, pc_features, pc_feature_ind, spike_clusters,  # Inputs
             #  max_spikes_for_cluster, max_spikes_for_nn, n_neighbors)
@@ -368,16 +368,12 @@ def calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, 
     n_spikes_per_cluster = calculate_n_spikes(spike_clusters)
 
     print(f'Found {total_units} clusters. {sum(n_spikes_per_cluster > 20)} of them have >20 spikes')
-    print("Calculating isi violations")
     isi_viol_rate, isi_viol_n = calculate_isi_violations(spike_times, spike_clusters, isi_threshold, min_isi)
 
-    print("Calculating presence ratio")
     presence_ratio = calculate_presence_ratio(spike_times, spike_clusters, )
 
-    print("Calculating firing rate")
     firing_rate = calculate_firing_rate(spike_times, spike_clusters, )
 
-    print("Calculating amplitude cutoff")
     amplitude_cutoff = calculate_amplitude_cutoff(spike_clusters, amplitudes, )
     metrics = pd.DataFrame(data=OrderedDict((('cluster_id', cluster_ids),
                                              ('firing_rate', firing_rate),
@@ -401,7 +397,7 @@ def calculate_metrics(spike_times, spike_clusters, spike_templates, amplitudes, 
                                                                         n_neighbors,
                                                                         do_parallel=do_parallel)
         except Exception as e:
-            num_channels_to_compare+=4
+            num_channels_to_compare += 6
             print(f'Hit error {e}.\n Increasing num_channels_to_compare to {num_channels_to_compare} and retrying')
             (isolation_distance, l_ratio,
              d_prime, nn_hit_rate, nn_miss_rate) = calculate_pc_metrics(spike_clusters,
